@@ -54,20 +54,31 @@ async function sendMessageToPoe(messageFromUser, clearContext = false) {
 
 app.post("/", express.json(), async function (req, res) {
   var requestBody = req.body;
-  var responseFromPoe = await sendMessageToPoe(requestBody.message.text);
-  console.log(responseFromPoe);
-  res.json({ msg: responseFromPoe });
 
-  /* bot
-    .sendMessage(requestBody.message.chat.id, responseFromPoe)
+  var clearContext = requestBody.message.text.charAt(0) === "/";
+
+  var messageForPoe = clearContext
+    ? requestBody.message.text.slice(1)
+    : requestBody.message.text;
+
+  var responseFromPoe = await sendMessageToPoe(messageForPoe, clearContext);
+  /* console.log(responseFromPoe);
+  res.json({ msg: responseFromPoe }); */
+  var textocontablasarregladas = fixMarkdownTableInText(responseFromPoe);
+  var encodedMessage = extractAndEncodeHTMLCode(textocontablasarregladas);
+
+  bot
+    .sendMessage(requestBody.message.chat.id, encodedMessage, {
+      parseMode: "HTML",
+    })
     .then((r) => {
-     // console.log(res);
+      // console.log(res);
       res.json({ msg: "This is CORS-enabled for all origins!" });
     })
     .catch((err) => {
       console.log(err);
       res.json({ msg: "This is CORS-enabled for all origins!" });
-    }); */
+    });
 });
 
 app.listen(PORT, function () {
@@ -147,16 +158,15 @@ function extractAndEncodeHTMLCode(text) {
   return text;
 }
 
-
 function fixMarkdownTableInText(text) {
   text = text + "\n";
   //var tableRegex = /\|.*\|.*\|.*\|\n\|(-+\|)+(-+\|)+(-+\|)+\n(\|.*\|\n)+/g; //solo para tablas de 3 columnas
   var tableRegex = /(\|.*)+\|\n(\| *-+ *)+\|\n((\|.*\|+\n)+)/g;
   return text.replace(tableRegex, (markdownTable) => {
-		var coincidencia = markdownTable.slice(0,-1);
-    var result= fixMarkdownTable(coincidencia);
-    console.log(result)
-		return result
+    var coincidencia = markdownTable.slice(0, -1);
+    var result = fixMarkdownTable(coincidencia);
+    console.log(result);
+    return result;
   });
 }
 
@@ -201,12 +211,13 @@ var encodedMessage = extractAndEncodeHTMLCode(textocontablasarregladas);
 const PORT = process.env.PORT || 3000; */
 
 //console.log(PORT);
-console.log(encodedMessage);
+/* console.log(encodedMessage);
 bot
   .sendMessage(id, encodedMessage, { parseMode: "HTML" })
   .then((res) => {
-    /* console.log(res) */
+    //console.log(res)
   })
   .catch((res) => {
-    /*  console.log(res) */
+     //console.log(res)
   });
+ */
