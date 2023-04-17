@@ -3,6 +3,7 @@ const he = require("he");
 const bot = new TeleBot("5889575921:AAHB8ktt32RtG5c_gJfmrvBY5KTuwUbWXKI");
 const cors = require("cors");
 const express = require("express");
+const fetch = require("node-fetch");
 const app = express();
 const PORT = process.env.PORT;
 
@@ -25,19 +26,48 @@ app.get("/", function (req, res) {
   console.log(req.route);
   res.json({ msg: "This is CORS-enabled for all origins!" });
 });
-app.use(express.json());
-app.post("/", async function (req, res) {
-  console.log(req.body);
-  bot
-    .sendMessage(id, "hola jose")
+
+async function sendMessageToPoe(messageFromUser, clearContext = false) {
+  var urlPOE = "https://apibotresponde.onrender.com/talk";
+  var payload = {
+    message: messageFromUser,
+    clearContext,
+  };
+
+  var options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  };
+
+  var result = await fetch(urlPOE, options)
+    .then((res) => res.json())
+    .then((res) => res);
+
+  if (!result.noError) {
+    return "Ocurrio un error:\n" + result.message;
+  }
+  return result.botRespuesta;
+}
+
+app.post("/", express.json(), async function (req, res) {
+  var requestBody = req.body;
+  var responseFromPoe = await sendMessageToPoe(requestBody.message.text);
+  console.log(responseFromPoe);
+  res.json({ msg: responseFromPoe });
+
+  /* bot
+    .sendMessage(requestBody.message.chat.id, responseFromPoe)
     .then((r) => {
-      console.log(r);
+     // console.log(res);
       res.json({ msg: "This is CORS-enabled for all origins!" });
     })
     .catch((err) => {
       console.log(err);
       res.json({ msg: "This is CORS-enabled for all origins!" });
-    });
+    }); */
 });
 
 app.listen(PORT, function () {
@@ -47,6 +77,18 @@ app.listen(PORT, function () {
 const url = "https://google.com";
 
 var message = `
+¡Claro! Aquí te hago una pequeña tabla de ejemplo:
+
+| Nombre | Edad | Género |
+| ------ | ---- | ------ |
+| Ana    | 25   | Femenino |
+| Juan   | 30   | Masculino |
+| María  | 18   | Femenino |
+| Luis   | 42   | Masculino |
+
+Esta tabla tiene tres columnas: "Nombre", "Edad" y "Género", y cuatro filas que contienen información sobre cuatro personas diferentes. Espero que esto te haya sido útil.
+
+
 ¡Claro! Aquí está una tabla HTML básica:
 
 \`\`\`
@@ -105,12 +147,16 @@ function extractAndEncodeHTMLCode(text) {
   return text;
 }
 
+
 function fixMarkdownTableInText(text) {
   text = text + "\n";
   //var tableRegex = /\|.*\|.*\|.*\|\n\|(-+\|)+(-+\|)+(-+\|)+\n(\|.*\|\n)+/g; //solo para tablas de 3 columnas
-  var tableRegex = /\|.*\|+\n\|(-+\|)+\n((\|.*\|+\n)+)/g;
+  var tableRegex = /(\|.*)+\|\n(\| *-+ *)+\|\n((\|.*\|+\n)+)/g;
   return text.replace(tableRegex, (markdownTable) => {
-    return fixMarkdownTable(markdownTable);
+		var coincidencia = markdownTable.slice(0,-1);
+    var result= fixMarkdownTable(coincidencia);
+    console.log(result)
+		return result
   });
 }
 
@@ -149,7 +195,7 @@ function fixMarkdownTable(markdown) {
 //var message = `Read more about [Google](${url}) now!!!!`;
 //var message = '<a href="https://google.com">Google</a>'; //si funciona con este
 var textocontablasarregladas = fixMarkdownTableInText(message);
-//console.log(textocontablasarregladas);
+console.log(textocontablasarregladas);
 var encodedMessage = extractAndEncodeHTMLCode(textocontablasarregladas);
 /* console.log(he.encode.toString());
 const PORT = process.env.PORT || 3000; */
@@ -158,5 +204,9 @@ const PORT = process.env.PORT || 3000; */
 console.log(encodedMessage);
 bot
   .sendMessage(id, encodedMessage, { parseMode: "HTML" })
-  .then((res) => console.log(res))
-  .catch((res) => console.log(res));
+  .then((res) => {
+    /* console.log(res) */
+  })
+  .catch((res) => {
+    /*  console.log(res) */
+  });
