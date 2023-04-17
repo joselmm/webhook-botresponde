@@ -4,7 +4,7 @@ const bot = new TeleBot('bot5889575921:AAHB8ktt32RtG5c_gJfmrvBY5KTuwUbWXKI');
 const cors = require('cors');
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 80;
+const PORT = 55260 || process.env.PORT;
 
 bot.start();
 
