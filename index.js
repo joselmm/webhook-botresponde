@@ -1,6 +1,6 @@
 const TeleBot = require('telebot');
 const he = require('he');
-const bot = new TeleBot(process.env.TOKEN);
+const bot = new TeleBot('bot5889575921:AAHB8ktt32RtG5c_gJfmrvBY5KTuwUbWXKI');
 const cors = require('cors');
 const express = require('express');
 const app = express();
@@ -19,7 +19,7 @@ bot.on(/^\/s (.+)$/, async function(msg, props) {
 });
 https://stackoverflow.com/questions/55761720/how-to-use-markdown-in-parse-mode-of-telegram-bot
  */
-const id = process.env.CHATID;
+const id = 1835590672;
 
 app.get('/', function (req, res, next) {
   console.log(req.route);
@@ -36,8 +36,8 @@ app.post('/', function (req, res, next) {
   //res.json({ msg: 'This is CORS-enabled for all origins!' });
 });
 
-app.listen(80, function () {
-  console.log('CORS-enabled web server listening on port 80');
+app.listen(PORT, function () {
+  console.log('CORS-enabled web server listening on port ' + PORT);
 });
 
 const url = 'https://google.com';
