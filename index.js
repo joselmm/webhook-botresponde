@@ -1,7 +1,7 @@
 const TeleBot = require("telebot");
 const he = require("he");
 const bot = new TeleBot("6256935640:AAH7V0TjQ6GyGqf0jGvKN00Qofu8qmQEKmw");
-//const cors = require("cors");
+const cors = require("cors");
 const express = require("express");
 const fetch = require("node-fetch");
 const app = express();
@@ -9,7 +9,7 @@ const PORT = 5487 || process.env.PORT;
 
 bot.start();
 
-//app.use(cors());
+app.use(cors());
 /* 
 bot.on(/^\/s (.+)$/, async function(msg, props) {
   const id = msg.chat.id;
