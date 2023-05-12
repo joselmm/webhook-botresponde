@@ -1,15 +1,15 @@
 const TeleBot = require("telebot");
 const he = require("he");
-const bot = new TeleBot("5889575921:AAHB8ktt32RtG5c_gJfmrvBY5KTuwUbWXKI");
-const cors = require("cors");
+const bot = new TeleBot("6256935640:AAH7V0TjQ6GyGqf0jGvKN00Qofu8qmQEKmw");
+//const cors = require("cors");
 const express = require("express");
 const fetch = require("node-fetch");
 const app = express();
-const PORT = process.env.PORT;
+const PORT = 5487 || process.env.PORT;
 
 bot.start();
 
-app.use(cors());
+//app.use(cors());
 /* 
 bot.on(/^\/s (.+)$/, async function(msg, props) {
   const id = msg.chat.id;
@@ -20,7 +20,6 @@ bot.on(/^\/s (.+)$/, async function(msg, props) {
 });
 https://stackoverflow.com/questions/55761720/how-to-use-markdown-in-parse-mode-of-telegram-bot
  */
-const id = 1835590672;
 
 app.get("/", function (req, res) {
   console.log(req.route);
@@ -28,7 +27,7 @@ app.get("/", function (req, res) {
 });
 
 async function sendMessageToPoe(messageFromUser, clearContext = false) {
-  var urlPOE = "https://apibotresponde.onrender.com/talk";
+  var urlPOE = "https://poe-leiner.onrender.com/talk/";
   var payload = {
     message: messageFromUser,
     clearContext,
@@ -54,6 +53,27 @@ async function sendMessageToPoe(messageFromUser, clearContext = false) {
 
 app.post("/", express.json(), async function (req, res) {
   var requestBody = req.body;
+
+  //por si algun perro:
+  //await bot.sendMessage(requestBody.message.chat.id, "hey ");
+  if (
+    !(
+      requestBody.message.chat.id === 247812007 ||
+      requestBody.message.chat.id === 1835590672
+    )
+  ) {
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(true);
+      }, 5000);
+    });
+    await bot.sendMessage(
+      requestBody.message.chat.id,
+      "This is not your bot, get out"
+    );
+
+    return;
+  }
 
   var clearContext = requestBody.message.text.charAt(0) === "/";
 
